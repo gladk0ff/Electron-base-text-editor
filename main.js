@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu,Notification } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -12,11 +12,14 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true
+        contextIsolation: true,
+        devTools: true
     }
   });
 
-  mainWindow.loadFile('index.html');
+    mainWindow.loadFile('index.html');
+    mainWindow.webContents.openDevTools();
+
   setupMenu();
 }
 
@@ -34,6 +37,14 @@ ipcMain.handle('save-text', (event, text) => {
   fs.writeFileSync(filePath, text);
 });
 
+// Обработчик для показа уведомлений
+ipcMain.handle('show-notification', (event, title, body) => {
+    new Notification({ 
+      title: title || "Текстовый редактор", 
+      body: body || "Файл успешно сохранен!" 
+    }).show();
+});
+  
 app.whenReady().then(createWindow);
 
 // Настройка меню
@@ -52,3 +63,4 @@ function setupMenu() {
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
+
