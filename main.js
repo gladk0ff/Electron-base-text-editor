@@ -1,66 +1,41 @@
-const { app, BrowserWindow, ipcMain, Menu,Notification } = require('electron');
-const fs = require('fs');
-const path = require('path');
+const { app, BrowserWindow,Menu } = require('electron');
 
-let mainWindow;
-const filePath = path.join(app.getPath('userData'), 'saved-text.txt');
+
+const template = [
+  {
+    label: 'View',
+    submenu: [
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: 'Ctrl+Shift+I',
+        click: () => {
+          BrowserWindow.getFocusedWindow().webContents.openDevTools();
+        }
+      }
+    ]
+  }
+];
+
+
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 800,
+  const window = new BrowserWindow({
+    width: 500,
     height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: false,
-        contextIsolation: true,
-        devTools: true
-    }
   });
 
-    mainWindow.loadFile('index.html');
-    mainWindow.webContents.openDevTools();
-
-  setupMenu();
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  window.loadFile('./src/index.html');
 }
 
-// Загрузка текста из файла при запуске
-ipcMain.handle('load-text', async () => {
-  try {
-    return fs.readFileSync(filePath, 'utf-8');
-  } catch {
-    return '';
-  }
-});
-
-// Сохранение текста
-ipcMain.handle('save-text', (event, text) => {
-  fs.writeFileSync(filePath, text);
-});
-
-// Обработчик для показа уведомлений
-ipcMain.handle('show-notification', (event, title, body) => {
-    new Notification({ 
-      title: title || "Текстовый редактор", 
-      body: body || "Файл успешно сохранен!" 
-    }).show();
-});
-  
 app.whenReady().then(createWindow);
 
-// Настройка меню
-function setupMenu() {
-  const template = [
-    {
-      label: 'Файл',
-      submenu: [
-        { 
-          label: 'Сохранить как...',
-          click: () => mainWindow.webContents.send('save-as')
-        },
-        { role: 'quit' }
-      ]
-    }
-  ];
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+try {
+  require('electron-reloader')(module, {
+    // Опции (если нужны)
+    watchRenderer: true, // Не перезагружать рендерер
+    ignore: ['node_modules/**'], // Игнорируемые пути
+  });
+} catch (error) {
+  console.log('Electron-reloader error:', error);
 }
-
