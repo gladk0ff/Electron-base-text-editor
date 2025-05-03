@@ -9,7 +9,9 @@ const template = [
         label: 'Toggle Developer Tools',
         accelerator: 'Ctrl+Shift+I',
         click: () => {
-          BrowserWindow.getFocusedWindow().webContents.openDevTools();
+          BrowserWindow.getFocusedWindow().webContents.openDevTools({
+            mode: 'detach'
+          });
         }
       }
     ]
@@ -24,7 +26,9 @@ function createWindow() {
     height: 600,
   });
 
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  // Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  Menu.setApplicationMenu(null);
+  window.webContents.openDevTools();
   window.loadFile('./src/index.html');
 }
 
