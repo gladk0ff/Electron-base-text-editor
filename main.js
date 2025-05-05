@@ -28,7 +28,9 @@ function createWindow() {
 
   // Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   Menu.setApplicationMenu(null);
-  window.webContents.openDevTools();
+  window.webContents.openDevTools({
+    mode: 'detach'
+  });
   window.loadFile('./src/index.html');
 }
 
