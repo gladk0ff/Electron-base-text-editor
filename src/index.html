@@ -11,12 +11,13 @@
         <div class="actions">
             <button class="actions__save-btn">Сохранить</button>
             <button class="actions__cancel-btn">Отменить</button>
-            <button class="actions__upoad-btn">
+            <button class="actions__upoad-btn" onclick="invokeUpload()">
                 <img class='actions__upoad-btn-icon' src="./icons/upload.png" alt="загрузить">
                 Загрузить
             </button>
         </div>
         <textarea class="editor"></textarea>
+        <input type="file" class="input-file">
     </main>
 
     <script src="./renderer.js"></script>
