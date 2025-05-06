@@ -1,24 +1,28 @@
 
-const editor = document.querySelector('editor');
-const saveBtn = document.querySelector('actions__save-btn');
-const cancelBtn = document.querySelector('actions__cancel-btn');
-const uploadBtn = document.querySelector('actions__upoad-btn');
-const inputFile = document.querySelector('input-file');
+const editor = document.querySelector('.editor');
+const saveBtn = document.querySelector('.actions__save-btn');
+const cancelBtn = document.querySelector('.actions__cancel-btn');
+const uploadBtn = document.querySelector('.actions__upoad-btn');
+const inputFile = document.querySelector('.input-file');
 
-const invokeUpload = () => {
-    const inputFile = document.querySelector('input-file');
-    console.log("invokeUpload",inputFile)
+uploadBtn.addEventListener('click', () => { 
     inputFile && inputFile.click();
-}
+});
 
-function loadFile(event) {
-    const file = event.target.files[0];
+
+inputFile.addEventListener('change', (event) => {
+    const file = event.target.files && event.target.files[0];
+
+    if (!file) {return;}
+    
     const reader = new FileReader();
     reader.onload = function (e) {
         editor.value = e.target.result;
     };
     reader.readAsText(file);
-}
+
+});
+
 
 // // Загрузка текста при запуске
 // window.api.loadText().then(text => {
