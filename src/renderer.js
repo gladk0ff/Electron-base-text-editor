@@ -20,8 +20,36 @@ inputFile.addEventListener('change', (event) => {
         editor.value = e.target.result;
     };
     reader.readAsText(file);
-
 });
+
+saveBtn.addEventListener('click', async () => {
+    const text = editor.value;
+    const isContinue = !text ? window.confirm('Сохранить пустой файл?') : true;
+    const fileName = inputFile.files[0] && inputFile.files[0].name || 'Новый документ.txt';
+    
+    if (isContinue) {
+        // const blob = new Blob([text], { type: 'text/plain' });
+        // const url = window.URL.createObjectURL(blob);
+    
+        // const link = document.createElement('a');
+        // link.setAttribute('href', url);
+        // link.download = inputFile.files[0] && inputFile.files[0].name || 'Новый документ.txt';
+        // link.click();
+    
+        //  // Освобождение памяти
+        // window.URL.revokeObjectURL(url);
+        
+        const result = await window.electronAPI.saveFile(text, fileName);
+    
+        if (result.success) {
+          console.log('Файл сохранен:', result.path);
+        } else {
+          console.error('Ошибка:', result.error);
+        }
+    }
+
+
+})
 
 
 // // Загрузка текста при запуске

@@ -1,4 +1,6 @@
-const { app, BrowserWindow,Menu } = require('electron');
+const { app, BrowserWindow,  Menu,ipcMain, dialog } = require('electron');
+const path = require('path');
+const fs = require('fs');
 
 
 const template = [
@@ -24,6 +26,11 @@ function createWindow() {
   const window = new BrowserWindow({
     width: 500,
     height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true // Безопасность: изолировать preload от кода страницы
+    }
   });
 
   // Menu.setApplicationMenu(Menu.buildFromTemplate(template));
@@ -45,3 +52,25 @@ try {
 } catch (error) {
   console.log('Electron-reloader error:', error);
 }
+
+// Обработчик сохранения файла
+ipcMain.handle('save-file', async (event, { content, defaultName }) => {
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    title: 'Сохранить файл',
+    defaultPath: path.join(app.getPath('documents'), defaultName),
+    filters: [
+      { name: 'Text Files', extensions: ['txt'] },
+      { name: 'All Files', extensions: ['*'] }
+    ]
+  });
+
+  if (!canceled && filePath) {
+    try {
+      await fs.promises.writeFile(filePath, content);
+      return { success: true, path: filePath };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }
+  return { success: false, error: 'Отменено пользователем' };
+});
