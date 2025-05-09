@@ -1,6 +1,7 @@
-const { app, BrowserWindow,  Menu,ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
+require('./events')
 
 
 const template = [
@@ -19,7 +20,6 @@ const template = [
     ]
   }
 ];
-
 
 
 function createWindow() {
@@ -52,25 +52,3 @@ try {
 } catch (error) {
   console.log('Electron-reloader error:', error);
 }
-
-// Обработчик сохранения файла
-ipcMain.handle('save-file', async (event, { content, defaultName }) => {
-  const { canceled, filePath } = await dialog.showSaveDialog({
-    title: 'Сохранить файл',
-    defaultPath: path.join(app.getPath('documents'), defaultName),
-    filters: [
-      { name: 'Text Files', extensions: ['txt'] },
-      { name: 'All Files', extensions: ['*'] }
-    ]
-  });
-
-  if (!canceled && filePath) {
-    try {
-      await fs.promises.writeFile(filePath, content);
-      return { success: true, path: filePath };
-    } catch (err) {
-      return { success: false, error: err.message };
-    }
-  }
-  return { success: false, error: 'Отменено пользователем' };
-});
