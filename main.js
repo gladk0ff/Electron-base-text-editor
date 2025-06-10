@@ -28,7 +28,7 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: false,
+      nodeIntegration: false,// убрать доступ к nodeJs из рендера
       contextIsolation: true // Безопасность: изолировать preload от кода страницы
     }
   });
